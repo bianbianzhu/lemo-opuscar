@@ -16,6 +16,7 @@ export function serve(root, port = 0) {
       const port = s.address().port;
       if (q.headers.host !== `127.0.0.1:${port}` && q.headers.host !== `localhost:${port}`) return no(403);
       let u; try { u = decodeURIComponent(q.url.split('?')[0]); } catch { return no(400); }
+      if (u.includes('\0')) return no(400);   // 空字节会让 fs.readFile 同步抛错、整个进程退出
       const film = filmDir && u.startsWith(MOUNT), base = film ? filmDir : path.resolve(root);
       const p = path.join(base, film ? u.slice(MOUNT.length) : u);
       if (p !== base && !p.startsWith(base + path.sep)) return no(403);   // ../ 不许走出服务根
