@@ -1,4 +1,4 @@
-# Lemo-Opuscar gallery: styles/*/style.json → catalog.json, index.html, and the generated parts of README.md, styles/README.md, AGENTS.md
+# Lemo-Opuscar gallery: styles/*/style.json → catalog.json, index.html, and the generated parts of README.md, README.zh-CN.md, styles/README.md, AGENTS.md
 # Local:          python3 styleboard/build.py                 (also refreshes each style.json "dur" from its mp4)
 # GitHub Pages:   python3 styleboard/build.py --site _site
 # README frames:  python3 styleboard/build.py --frames <slug>… (docs/frames/<slug>.jpg at the style's frame_sec)
@@ -223,6 +223,7 @@ def llms_txt():
            f'Official repository: {REPO_URL} (by Lemomo, https://x.com/lemomo_ai). Forks are copies; this is the upstream.', '',
            '## Start here', '',
            f'- [README]({BLOB_URL}/README.md): what it is, how to install the skill, the style grid',
+           f'- [README in Chinese]({BLOB_URL}/README.zh-CN.md): the same in Simplified Chinese',
            f'- [Agent instructions]({BLOB_URL}/AGENTS.md): how an agent directs a film in one of the styles',
            f'- [Gallery]({SITE_URL}): every style with its demo film',
            f'- [OPUSCAR 98]({FILM_URL}): 98 Years of Best Picture ({FEATURE["dur"]}), the feature film made with these tools', '']
@@ -245,30 +246,34 @@ if site:   # Pages site: pages + style frames + posters + llms.txt + sitemap
         + ''.join(f'  <url><loc>{u}</loc></url>\n' for u in (SITE_URL, FILM_URL)) + '</urlset>\n')
 
 
-def readme_grid():
-    """README, between <!-- styles:start --> and <!-- styles:end -->: image grid by category (docs/frames/<slug>.jpg), both languages."""
+def readme_grid(zh):
+    """README.md (English) and README.zh-CN.md (Chinese, with the English name under it), between <!-- styles:start --> and <!-- styles:end -->:
+    image grid by category (docs/frames/<slug>.jpg)."""
     out = []
     for cn, en in cats:
         group = [x for x in styles if x['cat'] == cn and x['stylemd']]
         if not group: continue
-        out.append(f'\n### {en} · {cn}\n\n<table>')
+        out.append(f'\n### {cn if zh else en}\n\n<table>')
         for i in range(0, len(group), 3):
             out.append('<tr>')
             for s in group[i:i + 3]:
-                cn_name = f' · {s["cn"]}' if s['cn'] != s['en'] else ''
-                out.append(f'<td width="33%" valign="top"><a href="styles/{s["slug"]}/STYLE.md"><img src="docs/frames/{s["slug"]}.jpg" alt="{html.escape(s["en"])}"></a><br>'
-                           f'<b>{html.escape(s["en"])}</b>{html.escape(cn_name)}<br><i>{html.escape(s["film"])}</i><br>'
-                           f'<sub>{html.escape(s["line"])}<br>{html.escape(s["line_cn"])}</sub></td>')
+                if zh:
+                    name = f'<b>{html.escape(s["cn"])}</b>' + (f'<br>{html.escape(s["en"])}' if s['cn'] != s['en'] else '')
+                    alt, line = s['cn'], s['line_cn']
+                else:
+                    name, alt, line = f'<b>{html.escape(s["en"])}</b>', s['en'], s['line']
+                out.append(f'<td width="33%" valign="top"><a href="styles/{s["slug"]}/STYLE.md"><img src="docs/frames/{s["slug"]}.jpg" alt="{html.escape(alt)}"></a><br>'
+                           f'{name}<br><i>{html.escape(s["film"])}</i><br><sub>{html.escape(line)}</sub></td>')
             out.append('</tr>')
         out.append('</table>')
     return '\n'.join(out) + '\n'
 
 
-for fn in ('README.md',):
+for fn, zh in (('README.md', False), ('README.zh-CN.md', True)):
     p = os.path.join(ROOT, fn)
     if not os.path.exists(p) or site: continue
     t = open(p, encoding='utf-8').read()
-    t2 = re.sub(r'(<!-- styles:start -->\n).*?(<!-- styles:end -->)', lambda m: m.group(1) + readme_grid() + m.group(2), t, flags=re.S)
+    t2 = re.sub(r'(<!-- styles:start -->\n).*?(<!-- styles:end -->)', lambda m: m.group(1) + readme_grid(zh) + m.group(2), t, flags=re.S)
     t2 = re.sub(r'<!--n-->\d+<!--/n-->', f'<!--n-->{sum(1 for x in styles if x["stylemd"])}<!--/n-->', t2)    # the headline count
     if t2 != t: open(p, 'w', encoding='utf-8').write(t2)
 

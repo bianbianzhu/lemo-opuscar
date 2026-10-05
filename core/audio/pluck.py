@@ -26,7 +26,7 @@ def midi(p):
     if isinstance(p, (int, float, np.integer, np.floating)): return float(p)
     import re
     m = re.fullmatch(r'\s*([A-Ga-g])([#sb]*)(-?\d+)\s*', str(p))
-    if not m: raise ValueError(f'无法解析音高 {p!r}')
+    if not m: raise ValueError(f'cannot parse pitch {p!r}')
     return float(12 * (int(m.group(3)) + 1) + {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}[m.group(1).upper()]
                  + m.group(2).count('#') + m.group(2).count('s') - m.group(2).count('b'))
 
@@ -215,7 +215,7 @@ def pluck(preset, pitch, dur=None, vel=.8, **kw):
     pitch: 'D3' 或 midi（可小数）；dur: 按住时长(s)，None=自然衰减完；vel 0..1
     kw: harmonic=True（泛音）、bend=[(t,半音)...]、vib=(Hz,深度半音,起始s)、glide=(目标音高,s)、trem=Hz（轮指/摇指）、
         以及覆盖预设参数 t60/damp/pos/bright/buzz/thr/bmix/noise、release"""
-    if preset not in PRESETS: raise KeyError(f'未知预设 {preset!r}；可用 {list(PRESETS)}')
+    if preset not in PRESETS: raise KeyError(f'unknown preset {preset!r}; available: {list(PRESETS)}')
     m = midi(pitch); vel = float(np.clip(vel, .01, 1))
     pr = PRESETS[preset]
     y = _modal(preset, m, dur, vel, **kw) if pr.get('modal') else _string(pr, m, dur, vel, **kw)

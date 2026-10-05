@@ -1,14 +1,15 @@
-"""edge-tts 配音（微软神经语音，中文首选，也能念其它语言）：
+"""edge-tts voice (Microsoft neural voices; first choice for Chinese, reads other languages too):
     python core/tts/tts_zh.py lines.json out_dir [--voice zh-CN-XiaoxiaoNeural] [--rate +0%] [--pitch +0Hz]
 lines.json = [{"id":..., "text":..., "voice":"zh-CN-YunxiNeural", "rate":"+10%", "pitch":"-2Hz", "say":"..."}, ...]
-  "say"（可选）= 实际送去朗读的文字，默认同 "text"（数字、缩写要写成读法时用；字幕仍用 text）。
-  也认 tts.py 的 "speed"（倍速，1.1 → +10%）。声音列表：python -m edge_tts --list-voices
-输出与 tts.py 完全一致：out_dir/<id>.wav（24kHz 单声道，去首尾静音）与 out_dir/dur.json。
-  中间的 mp3 缓存在 out_dir/.cache/，文字/声音/语速没变就不再联网（先写 .part 再改名，Ctrl-C 不会留下半个文件被下次当成好的；
-  缓存里已经坏了的 mp3 会自动删掉重下）。
+  "say" (optional) = the text actually sent to be spoken, default "text" (for numbers and abbreviations written out as read; subtitles still use text).
+  Also takes tts.py's "speed" (a multiplier, 1.1 → +10%). Voice list: python -m edge_tts --list-voices
+Output is the same as tts.py: out_dir/<id>.wav (24 kHz mono, leading/trailing silence trimmed) and out_dir/dur.json.
+  The mp3s are cached in out_dir/.cache/; unchanged text/voice/rate is not fetched again (written to .part, then renamed, so Ctrl-C never
+  leaves half a file that the next run takes as good; a damaged mp3 in the cache is deleted and fetched again).
 
-需要联网：这是微软的在线语音服务，不是本地模型。用它做的声音能不能商用，请自己看微软的服务条款。
-网络不通、被防火墙挡住时报错退出（退出码 2；输入或配置有误是 1）；离线的替代：tts.py 的 "lang":"cmn"（Kokoro，音色一般，用 asr_check.py 校对）。
+Needs the internet: this is Microsoft's online speech service, not a local model. Check Microsoft's terms yourself before using the voices commercially.
+Exits with an error when the network is down or blocked (exit code 2; bad input or configuration is 1). Offline alternative: tts.py with
+"lang":"cmn" (Kokoro, plain timbre; check it with asr_check.py).
 """
 import sys, io, json, os, re, asyncio, hashlib, subprocess, argparse
 import numpy as np, soundfile as sf

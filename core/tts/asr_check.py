@@ -1,14 +1,17 @@
-"""whisper 逐句校对：python core/tts/asr_check.py lines.json voices_dir [--lang en|zh|auto] [--model base|small|…] [--threshold 0.92]
-逐句对比原文与转写：前后补 0.6s 静音再转写（短句不补容易听错），输出逐词时间戳 voices_dir/words.json（口型、断句用）。
-lines.json 里可加 "asr" 字段覆盖期望文本（专有名词、拟声词、数字的读法，例如 "三十八" 而不是 "38"）。
---lang  auto（默认）按文本里有没有汉字判断；en 要求去掉标点和大小写后逐词完全一致（0–999 的数字两边都换成读法，所以
-        "forty" 和 "40" 算一样；更大的数、年份、序数 3rd、带标点的数（3.5、1:30、1,000、40%）不换，期望的转写写进 "asr" 字段）；zh（也可用 ja / ko）按字符相似度，
-        去标点、全半角、汉字数字变阿拉伯数字后 difflib 相似度 ≥ --threshold（默认 0.92）算通过。
-模型：--model（或环境变量 WHISPER_MODEL；模型名，或本地目录，离线可用）；默认 en → base.en，其它语言 → base（多语言）。
-      base 把某句听错、而你听着没错时，换 --model small 再查（更准，约 480 MB，慢几倍）。
-      首次运行会从 Hugging Face 下载（base / base.en ≈ 145 MB）；防火墙后面：HF_ENDPOINT=https://hf-mirror.com，
-      或者事先下好，再 --model /path/to/model-dir。
-退出码：0 全部通过；1 有不一致；2 检查没能运行（模型加载失败等）。
+"""Whisper line-by-line check: python core/tts/asr_check.py lines.json voices_dir [--lang en|zh|auto] [--model base|small|…] [--threshold 0.92]
+Compares each line's text with its transcription (0.6 s of silence is padded on both sides first; short lines are misheard without it) and
+writes per-word timestamps to voices_dir/words.json (for lip sync and line breaks).
+A line in lines.json may carry an "asr" field that overrides the expected text (proper names, onomatopoeia, how numbers are read, e.g. "三十八" rather than "38").
+--lang  auto (default) decides by whether the text contains CJK characters. en requires an exact word-by-word match after dropping punctuation
+        and case (whole numbers 0–999 are turned into words on both sides, so "forty" and "40" match; larger numbers, years, ordinals like 3rd and
+        numbers with punctuation (3.5, 1:30, 1,000, 40%) are not, so write the expected transcription in the "asr" field). zh (also ja / ko) compares
+        characters: after dropping punctuation, folding full-width to half-width and turning Chinese numerals into digits, a difflib similarity
+        ≥ --threshold (default 0.92) passes.
+Model: --model (or the WHISPER_MODEL environment variable; a model name, or a local folder for offline use); default en → base.en, other languages → base (multilingual).
+      If base mishears a line that sounds right to you, check again with --model small (more accurate, about 480 MB, several times slower).
+      The first run downloads from Hugging Face (base / base.en ≈ 145 MB); behind a firewall set HF_ENDPOINT=https://hf-mirror.com,
+      or download the model beforehand and pass --model /path/to/model-dir.
+Exit codes: 0 all lines pass; 1 some lines differ; 2 the check could not run (model failed to load, etc.).
 """
 import sys, json, re, os, argparse, difflib, unicodedata
 

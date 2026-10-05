@@ -1,11 +1,12 @@
-"""Kokoro 本地配音（离线）：python core/tts/tts.py lines.json out_dir
+"""Kokoro offline voice: python core/tts/tts.py lines.json out_dir
 lines.json = [{"id":..., "text":..., "voice":"bm_george", "speed":0.92, "lang":"en-us"}, ...]
-  默认 voice=af_bella、speed=0.92、lang=en-us。中文用 "lang":"cmn" 加 zf_*/zm_* 声音（离线可用，音色一般）。
-输出 out_dir/<id>.wav（24kHz，去首尾静音）与 out_dir/dur.json
-模型：kokoro-v1.0.onnx / voices-v1.0.bin 放在本目录，下载：sh tools/fetch.sh voice（约 350 MB）
-路径限制：espeak-ng（Kokoro 用它把文字转成音素）的数据目录，解析软链后的真实路径必须短于 160 字节（汉字算 3 字节），否则找不到数据、
-         报一个指向别人机器上某个路径（编译 espeak-ng 的那台）的莫名其妙的错。库放在 ~/lemo-opuscar 之类的短路径下就没事；本脚本开工前会检查并说明。
-要更自然的中文/日文等声音：core/tts/tts_zh.py（微软 edge-tts，要联网），接口和输出布局相同。
+  Defaults: voice=af_bella, speed=0.92, lang=en-us. For Chinese use "lang":"cmn" with a zf_*/zm_* voice (works offline, plain timbre).
+Writes out_dir/<id>.wav (24 kHz, leading/trailing silence trimmed) and out_dir/dur.json.
+Model: kokoro-v1.0.onnx / voices-v1.0.bin in this folder; download with sh tools/fetch.sh voice (about 350 MB).
+Path limit: the data folder of espeak-ng (which Kokoro uses to turn text into phonemes) must have a real path, after symlinks, shorter than
+         160 bytes (a CJK character counts 3), or it is not found and the error names a path on someone else's machine (the one espeak-ng was
+         built on). A library under a short path such as ~/lemo-opuscar is fine; this script checks before it starts and explains.
+More natural Chinese, Japanese and other voices: core/tts/tts_zh.py (Microsoft edge-tts, online), same interface and output layout.
 """
 import sys, json, os, re
 if len(sys.argv) < 3 or sys.argv[1] in ('-h', '--help'):
