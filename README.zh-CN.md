@@ -223,6 +223,16 @@ agent 会读三份指南，像一个小工作室一样开工。指南是英文�
 </table>
 <!-- styles:end -->
 
+## Star 增长
+
+<a href="https://www.star-history.com/#lemomo-ai/lemo-opuscar&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=lemomo-ai/lemo-opuscar&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=lemomo-ai/lemo-opuscar&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=lemomo-ai/lemo-opuscar&type=Date" />
+ </picture>
+</a>
+
 ## 授权
 
 **LemoLab × Claude Opus 5.5** 出品，MIT 协议。样片中的第三方素材沿用各自的授权（见各样片的 `CREDITS`）；你在自己片子里使用的素材由你负责。

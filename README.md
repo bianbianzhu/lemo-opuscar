@@ -227,6 +227,16 @@ Click a frame for its `STYLE.md`.
 </table>
 <!-- styles:end -->
 
+## Star history
+
+<a href="https://www.star-history.com/#lemomo-ai/lemo-opuscar&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=lemomo-ai/lemo-opuscar&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=lemomo-ai/lemo-opuscar&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=lemomo-ai/lemo-opuscar&type=Date" />
+ </picture>
+</a>
+
 ## Licence
 
 Made by **LemoLab × Claude Opus 5.5**. MIT licensed. Third-party assets in the demos keep their own licences (see each demo's `CREDITS`); you are responsible for the materials you use in your films.
